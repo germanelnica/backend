@@ -10,6 +10,8 @@ public class ApiDbContext : DbContext
     {
 
     }
-
     public DbSet<CarBrand> CarBrand { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+        => modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApiDbContext).Assembly);
 }
