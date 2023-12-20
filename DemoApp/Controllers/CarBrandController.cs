@@ -8,16 +8,12 @@ namespace DemoApp.Controllers
     [ApiController]
     public class CarBrandController : Controller
     {
-        private readonly ILogger<CarBrandController> _logger;
         private readonly ApiDbContext _context;
-        public static IConfiguration Configuration { get; private set; }
+        //public static IConfiguration Configuration { get; private set; }
 
-        public CarBrandController(ILogger<CarBrandController> logger, ApiDbContext context, IConfiguration configuration)
+        public CarBrandController(ApiDbContext context)
         {
             _context = context;
-            _logger = logger;
-            Configuration = configuration;
-            var connectionstring = configuration.GetConnectionString("DefaultConnection");
         }
 
         [HttpGet]

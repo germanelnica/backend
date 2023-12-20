@@ -3,7 +3,7 @@ using DemoApp.Models;
 
 namespace DemoApp.Data;
 
-public class ApiDbContext : DbContext
+public class ApiDbContext : DbContext, IDatabaseContext
 {
     public ApiDbContext(DbContextOptions<ApiDbContext> options)
     : base(options)

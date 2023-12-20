@@ -11,6 +11,7 @@ builder.Services.AddControllers();
 
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApiDbContext>(options => options.UseNpgsql(conn));
+builder.Services.AddScoped<IDatabaseContext>(provider => provider.GetService<ApiDbContext>());
 
 
 var app = builder.Build();
