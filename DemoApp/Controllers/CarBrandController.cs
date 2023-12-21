@@ -9,8 +9,6 @@ namespace DemoApp.Controllers
     public class CarBrandController : Controller
     {
         private readonly ApiDbContext _context;
-        //public static IConfiguration Configuration { get; private set; }
-
         public CarBrandController(ApiDbContext context)
         {
             _context = context;
