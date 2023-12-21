@@ -12,74 +12,67 @@ namespace UnitTesting
 {
     public class CardBrandTest
     {
-        private readonly CarBrandController _carBrandController;
-        private readonly ApiDbContext _apiDbContext;
+
+        private readonly DbContextOptions<ApiDbContext> options = new DbContextOptionsBuilder<ApiDbContext>()
+                .UseNpgsql("User Id=postgres;Password=postgres;Server=localhost;Port=5433;Database=SampleDb;Pooling=true;") // Provide your test database connection string
+                .Options;
         public CardBrandTest()
         {
             
         }
+
         [Fact]
         public async void GoodResponse()
         {
-            var options = new DbContextOptionsBuilder<ApiDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Corrected method
-                .Options;
-
+            
             using (var context = new ApiDbContext(options))
             {
                 var controller = new CarBrandController(context);
-
-                // Act
                 var result = await controller.Get();
-
-                // Assert
-                Assert.IsType<NotFoundResult>(result);
-            }
-        }
-
-        [Fact]
-        public async Task Get_ReturnsOkResult_WithData()
-        {
-            // Arrange
-            var options = new DbContextOptionsBuilder<ApiDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
-            using (var context = new ApiDbContext(options))
-            {
-                // Add sample data to the in-memory database
-                context.CarBrand.Add(new CarBrand { Id = 1, Name = "Brand1" });
-                context.SaveChanges();
-            }
-
-            using (var context = new ApiDbContext(options))
-            {
-                var controller = new CarBrandController(context);
-
                 // Act
-                var result = await controller.Get();
-
-                // Assert
                 var okResult = Assert.IsType<OkObjectResult>(result);
                 var data = Assert.IsType<List<CarBrand>>(okResult.Value);
 
-                // Add your assertions based on the seeded data
-                Assert.Single(data); // Ensure there is one item
-                Assert.Equal("Brand1", data[0].Name); // Ensure the name matches
+                // Additional assertions based on the seeded data
+                Assert.NotEmpty(data);
             }
         }
 
+
         [Fact]
-        public void GoodResponseById()
+        public async void GoodResponseById()
         {
-            var result = _carBrandController.Get(1);
-            Assert.NotNull(result);
+            using (var context = new ApiDbContext(options))
+            {
+                var controller = new CarBrandController(context);
+
+                // Act
+                var result = await controller.Get(1);
+
+                // Assert
+                var okResult = Assert.IsType<OkObjectResult>(result);
+                var data = Assert.IsType<CarBrand>(okResult.Value);
+
+                // Add your assertions based on the seeded data
+                Assert.NotNull(data);
+            }
         }
         [Fact]
-        public void BadResponse()
+        public async void BadResponse()
         {
-            var result = _carBrandController.Get(1212121);
-            Assert.Null(result);
+            using (var context = new ApiDbContext(options))
+            {
+                var controller = new CarBrandController(context);
+
+                // Act // not exist
+                var result = await controller.Get(112121121);
+
+                // Assert
+                var notFoundResult = Assert.IsType<NotFoundResult>(result);
+
+                // Additional assertions if needed
+                Assert.Equal(404, notFoundResult.StatusCode);
+            }
         }
     }
 }
